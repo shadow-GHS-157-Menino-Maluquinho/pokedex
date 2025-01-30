@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:sqflite/sqflite.dart';
+
+//  flutter pub add sqflite
 void main() {
   runApp(MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   @override
@@ -16,9 +18,11 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
+void Add_poke(numero){
+  
+}
 class PokedexScreen extends StatefulWidget {
-   @override
+  @override
   _PokedexScreenState createState() => _PokedexScreenState();
 }
 
@@ -33,7 +37,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
       pokemon = null;
     });
 
-    final url = Uri.parse('https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}');
+    final url = Uri.parse(
+        'https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -55,48 +60,42 @@ class _PokedexScreenState extends State<PokedexScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:PreferredSize(
+      appBar: PreferredSize(
         preferredSize: Size.fromHeight(120.0),
-        
-        child:  AppBar(
-        
-        title:Center(child: Text("Pokeden top",    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-       
-        ),
+        child: AppBar(
+          title: Center(
+            child: Text(
+              "Pokeden top",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
           flexibleSpace: Image(
-          image: AssetImage('assets/images/pokemom.png'),
-          fit: BoxFit.cover,
+            image: AssetImage('assets/images/pokemom.png'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child:
-        Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-           TextField(
-          maxLines: 1,
-          controller:searchController,
-          decoration: InputDecoration(
-
-          hintText: "buscar",
-
-          filled: true,
-
-          suffixIcon: IconButton(onPressed: (){
-                if (searchController.text.isNotEmpty) {
-                  fetchPokemon(searchController.text);
-                }
-
-
-            },icon: Icon(Icons.search)),
-          border: OutlineInputBorder(
-          borderSide: BorderSide(width: 80),
-          borderRadius: BorderRadius.circular(20))
-              
-          )
-              ),
-           
+            TextField(
+                maxLines: 1,
+                controller: searchController,
+                decoration: InputDecoration(
+                    hintText: "buscar",
+                    filled: true,
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          if (searchController.text.isNotEmpty) {
+                            fetchPokemon(searchController.text);
+                          }
+                        },
+                        icon: Icon(Icons.search)),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 80),
+                        borderRadius: BorderRadius.circular(20)))),
             SizedBox(height: 20),
             isLoading
                 ? CircularProgressIndicator()
@@ -107,21 +106,53 @@ class _PokedexScreenState extends State<PokedexScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PokemonDetailScreen(pokemon: pokemon!),
+                              builder: (context) =>
+                                  PokemonDetailScreen(pokemon: pokemon!),
                             ),
                           );
                         },
-                        child: Column(
+                        child:Container(
+                       /*   decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 2,
+                              //color:  const Color.fromARGB(255, 255, 255, 255)
+                            )
+                          ),*/
+                             child:  Column(
                           children: [
-                            Text(
+                     
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+             
+                                      Text(
                               pokemon!.name.toUpperCase(),
-                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold),
+                                  
+                          ),IconButton(onPressed: (){
+
+                          }, icon: Icon(Icons.star,color: Colors.amber,))
+
+         
+                              ],
+                            )
+                           ,
+
+               
                             Image.network(pokemon!.imageUrl),
                             Text("ID: ${pokemon!.id}"),
                             Text("Tipos: ${pokemon!.types.join(', ')}"),
-                          ],
-                        ),
+                           
+                               IconButton(onPressed: (){
+
+                               }, icon: Icon(Icons.catching_pokemon_outlined,
+                    size: 30, color: const Color.fromARGB(255, 204, 16, 16)))
+                            
+           ] ),
+
+                        )
+                    
                       ),
           ],
         ),
@@ -175,7 +206,10 @@ class PokemonDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(pokemon.name)),
+      appBar: AppBar(
+        title: Text(pokemon.name),
+       
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -200,163 +234,126 @@ class PokemonDetailScreen extends StatelessWidget {
   }
 }
 
-
-class Home extends StatelessWidget{
-
- @override
+class Home extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-    title: "pokedex",
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-
-     primaryColor: const Color.fromARGB(255, 6, 112, 86),
-     visualDensity: VisualDensity.adaptivePlatformDensity,
-
-   ),home: Homes(),
-
- );
-
+      title: "pokedex",
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: const Color.fromARGB(255, 6, 112, 86),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Homes(),
+    );
   }
-
 }
-
-
 
 class Homes extends StatefulWidget {
-
-    @override
-    _Homestela createState()=> _Homestela();
-
-
-
+  @override
+  _Homestela createState() => _Homestela();
 }
 
+class _Homestela extends State<Homes> {
+  //final TextEditingController _input = TextEditingController();
 
-
-class _Homestela extends State<Homes>{
-
- //final TextEditingController _input = TextEditingController();
-
- @override
-
-  Widget build(BuildContext context){
-   return Scaffold(
-     appBar:PreferredSize(
-        preferredSize: Size.fromHeight(120.0),
-        
-        child:  AppBar(
-        
-        title:Center(child: Text("Pokeden top",    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-       
-        ),
-          flexibleSpace: Image(
-          image: AssetImage('assets/images/poke.png'),
-          fit: BoxFit.cover,
-        ),
-      ),),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child:Row(
-          children: [
-
-            Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-             ToggleSwitch(
-            initialLabelIndex: null,
-            totalSwitches: 3,
-  
-            minWidth: 200.0,
-            minHeight: 100.0,
-            isVertical: true,
-             activeBgColor: [const Color.fromARGB(255, 56, 78, 139)],
-              activeFgColor: Colors.white,
-              inactiveBgColor: const Color.fromARGB(255, 221, 218, 224),
-              inactiveFgColor: Colors.grey[900],
-              labels: ['Procurar Pokemons', 'Adicionar Pokemons', 'Configuraçãoes'],
-              onToggle: (index) {
-              if (index == 0 ){
-                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PokedexScreen()),
-              );
-              }
-              if (index == 1){
-                Navigator.push(
-                  context, MaterialPageRoute(builder: (context) =>add_pokemom())
-                );
-              }
-            },
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(120.0),
+          child: AppBar(
+            title: Center(
+              child: Text(
+                "Pokeden top",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
+            flexibleSpace: Image(
+              image: AssetImage('assets/images/poke.png'),
+              fit: BoxFit.cover,
+            ),
           ),
-          
-          
-          ]
-
-
-        ),  Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-             ToggleSwitch(
-            initialLabelIndex: null,
-            totalSwitches: 3,
-            minWidth: 200.0,
-            minHeight: 100.0,
-            isVertical: true,
-             activeBgColor: [const Color.fromARGB(255, 56, 78, 139)],
-              activeFgColor: Colors.white,
-              inactiveBgColor: const Color.fromARGB(255, 221, 218, 224),
-              inactiveFgColor: Colors.grey[900],
-              labels: ['Favoridos',"sd","adw"],
-              onToggle: (index) {
-              if (index == 0 ){
-                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PokedexScreen()),
-              );
-              }
-              if (index == 1){
-                Navigator.push(
-                  context, MaterialPageRoute(builder: (context) =>add_pokemom())
-                );
-              }
-            },
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                ToggleSwitch(
+                  initialLabelIndex: null,
+                  totalSwitches: 3,
+                  minWidth: 200.0,
+                  minHeight: 100.0,
+                  isVertical: true,
+                  activeBgColor: [const Color.fromARGB(255, 56, 78, 139)],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: const Color.fromARGB(255, 221, 218, 224),
+                  inactiveFgColor: Colors.grey[900],
+                  labels: [
+                    'Procurar Pokemons',
+                    'Adicionar Pokemons',
+                    'Configuraçãoes'
+                  ],
+                  onToggle: (index) {
+                    if (index == 0) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PokedexScreen()),
+                      );
+                    }
+                    if (index == 1) {
+                      Navigator.push(   
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => add_pokemom()));
+                    }
+                  },
+                ),
+              ]),
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                ToggleSwitch(
+                  initialLabelIndex: null,
+                  totalSwitches: 2,
+                  minWidth: 200.0,
+                  minHeight: 100.0,
+                  isVertical: true,
+                  activeBgColor: [const Color.fromARGB(255, 56, 78, 139)],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: const Color.fromARGB(255, 221, 218, 224),
+                  inactiveFgColor: Colors.grey[900],
+                  labels: ['Favoridos', "meus pokemons"],
+                  onToggle: (index) {
+                    if (index == 0) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PokedexScreen()),
+                      );
+                    }
+                    if (index == 1) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => add_pokemom()));
+                    }
+                  },
+                ),
+              ]),
+            ],
           ),
-          
-          
-          ]
-
-
-        ),
-
-          ],
-        ),
-          )
-       
-      
-      
-      
-      );
-
-     
-
-    }
-
-    
-
+        ));
+  }
 }
 
-
-class add_pokemom extends StatefulWidget{
-    @override
-    _add_pokemoms createState() => _add_pokemoms();
-    
+class add_pokemom extends StatefulWidget {
+  @override
+  _add_pokemoms createState() => _add_pokemoms();
 }
 
-
-
-class _add_pokemoms extends State<add_pokemom>{
-  TextEditingController _neme =  TextEditingController();
+class _add_pokemoms extends State<add_pokemom> {
+  TextEditingController _neme = TextEditingController();
   TextEditingController _foto = TextEditingController();
   TextEditingController _tipo = TextEditingController();
   TextEditingController _vida = TextEditingController();
@@ -364,102 +361,100 @@ class _add_pokemoms extends State<add_pokemom>{
   TextEditingController _peso = TextEditingController();
   TextEditingController _altura = TextEditingController();
 
-    @override
-    Widget build(BuildContext context){
-        
-        return Scaffold(
-         appBar:PreferredSize(
-          preferredSize: Size.fromHeight(120.0),
-          child:AppBar(
-          title: Center(
-            child: Text("Qual  e o seu pokemom",style: TextStyle(fontSize:24.0,fontWeight: FontWeight.bold)),
-            
-          ),
-          flexibleSpace:Image(
-              image: AssetImage("images/imageadd.png"),
-              fit:BoxFit.cover),
-          )
-
-         )
-         ,body:Padding(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: PreferredSize(
+            preferredSize: Size.fromHeight(120.0),
+            child: AppBar(
+              title: Center(
+                child: Text("Qual  e o seu pokemom",
+                    style:
+                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+              ),
+              flexibleSpace: Image(
+                  image: AssetImage("images/imageadd.png"), fit: BoxFit.cover),
+            )),
+        body: Padding(
           padding: const EdgeInsets.all(120.0),
           child: Column(
-
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-           maxLines: 1,
-          controller:_neme,
-          decoration: InputDecoration(
-
-          hintText: "Nome",
-
-          filled: true,)
-              ),
-                TextField(
-           maxLines: 1,
-          controller:_foto,
-          decoration: InputDecoration(
-
-          hintText: "Foto",
-
-          filled: true,)
-              ),  TextField(
-           maxLines: 1,
-          controller:_tipo,
-          decoration: InputDecoration(
-
-          hintText: "Tipo",
-
-          filled: true,)
-              ),  TextField(
-           maxLines: 1,
-          controller:_vida,
-          decoration: InputDecoration(
-
-          hintText: "Vida",
-
-          filled: true,)
-              ),  TextField(
-           maxLines: 1,
-          controller:_forca,
-          decoration: InputDecoration(
-
-          hintText: "Força",
-
-          filled: true,)
-              ),  TextField(
-           maxLines: 1,
-          controller:_peso,
-          decoration: InputDecoration(
-
-          hintText: "Peso",
-
-          filled: true,)
-              ),  TextField(
-           maxLines: 1,
-          controller:_altura,
-          decoration: InputDecoration(
-
-          hintText: "Altura",
-
-          filled: true,)
-              ),
+                  maxLines: 1,
+                  controller: _neme,
+                  decoration: InputDecoration(
+                    hintText: "Nome",
+                    filled: true,
+                  )),
+              TextField(
+                  maxLines: 1,
+                  controller: _foto,
+                  decoration: InputDecoration(
+                    hintText: "Foto",
+                    filled: true,
+                  )),
+              TextField(
+                  maxLines: 1,
+                  controller: _tipo,
+                  decoration: InputDecoration(
+                    hintText: "Tipo",
+                    filled: true,
+                  )),
+              TextField(
+                  maxLines: 1,
+                  controller: _vida,
+                  decoration: InputDecoration(
+                    hintText: "Vida",
+                    filled: true,
+                  )),
+              TextField(
+                  maxLines: 1,
+                  controller: _forca,
+                  decoration: InputDecoration(
+                    hintText: "Força",
+                    filled: true,
+                  )),
+              TextField(
+                  maxLines: 1,
+                  controller: _peso,
+                  decoration: InputDecoration(
+                    hintText: "Peso",
+                    filled: true,
+                  )),
+              TextField(
+                  maxLines: 1,
+                  controller: _altura,
+                  decoration: InputDecoration(
+                    hintText: "Altura",
+                    filled: true,
+                  )),
             ],
           ),
-          
-          
-          )
+        ));
+  }
+}
 
-         
-         
-         );
-        
-        
-        
-        
-    }
+/*
+class favoride extends StatefulWidget{
+    @override
+    _view_favoride createState() => _view_favoride();
     
+    
+}
+
+class _view_favoride State<favoride>{
+    
+    @override
+    Widget build(BuildContext context){
+        return Scaffold(
+        appBar:AppBar(title: Text("data"),)
+        ,body: Text("data"),
+        
+        
+        
+        );
+    }
     
 }
 
@@ -469,16 +464,7 @@ class _add_pokemoms extends State<add_pokemom>{
 
 
 
-
-
-
-
-
-
-
-
-
-
+*/
 
 
 
