@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:toggle_switch/toggle_switch.dart';
-import 'package:sqflite/sqflite.dart';
+import 'banco.dart';
+
 
 //  flutter pub add sqflite
 void main() {
@@ -131,7 +132,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
                                   fontSize: 24, fontWeight: FontWeight.bold),
                                   
                           ),IconButton(onPressed: (){
-
+                                var a = pegar_pokemom();
+                                a.criar();
                           }, icon: Icon(Icons.star,color: Colors.amber,))
 
          
@@ -145,7 +147,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
                             Text("Tipos: ${pokemon!.types.join(', ')}"),
                            
                                IconButton(onPressed: (){
-
+                               var a = salvar_pokemom(name: pokemon!.name, ids: pokemon!.id, image: pokemon!.imageUrl, tipo: pokemon!.types, vida: pokemon!.hp, atack: pokemon!.attack, altura: pokemon!.height, peso: pokemon!.weight);
+                                a.criar();
                                }, icon: Icon(Icons.catching_pokemon_outlined,
                     size: 30, color: const Color.fromARGB(255, 204, 16, 16)))
                             
@@ -465,23 +468,6 @@ class _view_favoride State<favoride>{
 
 
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
